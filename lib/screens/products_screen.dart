@@ -262,7 +262,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         onPressed: _showAddProductDialog,
         icon: const Icon(Icons.add),
         label: Text("منتج جديد", style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-        splashColor: Colors.black.withOpacity(0.2),
+        splashColor: Colors.black.withValues(alpha: 0.2),
       ),
     );
   }

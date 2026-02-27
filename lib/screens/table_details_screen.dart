@@ -246,43 +246,43 @@ class _TableDetailsScreenState extends State<TableDetailsScreen> {
                 ...newItems.map((item) => pw.Row(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
-                          pw.Text("- ${item['name']}",
+                          pw.Text(" - ${item['name']}",
                               style: pw.TextStyle(
                                   font: fontTableBold,
                                   fontFallback: [fallbackFont],
                                   fontSize: 14)),
-                          pw.Text("x${item['qty']}",
+                          pw.Text(" x ${item['qty']} ",
                               style: pw.TextStyle(
                                   font: fontTableBold,
                                   fontFallback: [fallbackFont],
                                   fontSize: 16)),
                         ])),
-                // if (oldItems.isNotEmpty) ...[
-                //   pw.SizedBox(height: 15),
-                //   pw.Divider(borderStyle: pw.BorderStyle.dashed),
-                //   pw.Text(" طلبات سابقة ",
-                //       style: pw.TextStyle(
-                //           font: fontTable,
-                //           fontFallback: [fallbackFont],
-                //           fontSize: 10,
-                //           color: PdfColors.grey700)),
-                //   ...oldItems.map((item) => pw.Row(
-                //           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                //           children: [
-                //             pw.Text(item['name'],
-                //                 style: pw.TextStyle(
-                //                     font: fontTable,
-                //                     fontFallback: [fallbackFont],
-                //                     fontSize: 10,
-                //                     color: PdfColors.grey700)),
-                //             pw.Text("x${item['qty']}",
-                //                 style: pw.TextStyle(
-                //                     font: fontTable,
-                //                     fontFallback: [fallbackFont],
-                //                     fontSize: 10,
-                //                     color: PdfColors.grey700)),
-                //           ])),
-                // ]
+                if (oldItems.isNotEmpty) ...[
+                  pw.SizedBox(height: 15),
+                  pw.Divider(borderStyle: pw.BorderStyle.dashed),
+                  pw.Text(" طلبات سابقة ",
+                      style: pw.TextStyle(
+                          font: fontTable,
+                          fontFallback: [fallbackFont],
+                          fontSize: 10,
+                          color: PdfColors.grey700)),
+                  ...oldItems.map((item) => pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(item['name'],
+                                style: pw.TextStyle(
+                                    font: fontTable,
+                                    fontFallback: [fallbackFont],
+                                    fontSize: 10,
+                                    color: PdfColors.grey700)),
+                            pw.Text(" x ${item['qty']} ",
+                                style: pw.TextStyle(
+                                    font: fontTable,
+                                    fontFallback: [fallbackFont],
+                                    fontSize: 10,
+                                    color: PdfColors.grey700)),
+                          ])),
+                ]
               ],
             ),
           );
@@ -390,11 +390,11 @@ class _TableDetailsScreenState extends State<TableDetailsScreen> {
                         font: fontDecorative,
                         fontFallback: [fallbackFont],
                         fontSize: 24)),
-                pw.Text("فاتورة طلب",
-                    style: pw.TextStyle(
-                        font: fontTable,
-                        fontFallback: [fallbackFont],
-                        fontSize: 11)),
+                // pw.Text("فاتورة طلب",
+                //     style: pw.TextStyle(
+                //         font: fontTable,
+                //         fontFallback: [fallbackFont],
+                //         fontSize: 11)),
                 pw.SizedBox(height: 10),
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -604,11 +604,40 @@ class _TableDetailsScreenState extends State<TableDetailsScreen> {
 
                 pw.SizedBox(height: 6),
 
-                pw.Text("شكراً لزيارتكم!",
+                pw.Text("شكراً لزيارتكم",
                     style: pw.TextStyle(
                         font: fontTable,
                         fontFallback: [fallbackFont],
                         fontSize: 10)),
+                
+                pw.SizedBox(height: 10),
+                pw.Divider(thickness: 1.0),
+                pw.SizedBox(height: 4),
+                
+                // 👇 Developer Footer
+                pw.Text("مطور من قبل",
+                    style: pw.TextStyle(
+                        font: fontTable,
+                        fontFallback: [fallbackFont],
+                        fontSize: 8)),
+                pw.Text("مهندس البرمجيات",
+                    textDirection: pw.TextDirection.rtl,
+                    style: pw.TextStyle(
+                        font: fontTable,
+                        fontFallback: [fallbackFont],
+                        fontSize: 7)),
+                pw.Text("عبدالمجيد حميد المشهداني",
+                    textDirection: pw.TextDirection.rtl,
+                    style: pw.TextStyle(
+                        font: fontTable,
+                        fontFallback: [fallbackFont],
+                        fontSize: 8)),
+                pw.Text("07764567567",
+                    textDirection: pw.TextDirection.ltr,
+                    style: pw.TextStyle(
+                        font: fontTable,
+                        fontFallback: [fallbackFont],
+                        fontSize: 8)),
               ],
             ),
           );

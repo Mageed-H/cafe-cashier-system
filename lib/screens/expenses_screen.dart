@@ -109,7 +109,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         onPressed: _showAddExpenseDialog,
         icon: const Icon(Icons.remove_circle),
         label: Text("تسجيل مصروف", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
-        splashColor: Colors.white.withOpacity(0.3),
+        splashColor: Colors.white.withValues(alpha: 0.3),
       ),
     );
   }

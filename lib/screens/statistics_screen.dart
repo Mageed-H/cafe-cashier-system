@@ -105,7 +105,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           IconButton(
               tooltip: "تحديد تاريخ معين",
               icon: const Icon(Icons.calendar_month, color: Colors.white),
-              splashColor: Colors.white.withOpacity(0.3),
+              splashColor: Colors.white.withValues(alpha: 0.3),
               onPressed: _pickDate),
         ],
       ),
@@ -118,7 +118,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Expanded(
                     child: Card(
-                        color: successGreen.withOpacity(0.08),
+                        color: successGreen.withValues(alpha: 0.08),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
@@ -134,7 +134,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ])))),
                 Expanded(
                     child: Card(
-                        color: busyRed.withOpacity(0.08),
+                        color: busyRed.withValues(alpha: 0.08),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
@@ -150,7 +150,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ])))),
                 Expanded(
                     child: Card(
-                        color: accentGold.withOpacity(0.12),
+                        color: accentGold.withValues(alpha: 0.12),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [

@@ -212,7 +212,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         icon: const Icon(Icons.add),
         label: Text("تصنيف جديد", 
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-        splashColor: Colors.white.withOpacity(0.3),
+        splashColor: Colors.white.withValues(alpha: 0.3),
       ),
     );
   }
