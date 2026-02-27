@@ -1,7 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/database_helper.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color surfaceBeige = Color(0xFFF5E6D3);
+const Color busyRed = Color(0xFFD32F2F);
+const Color successGreen = Color(0xFF2E7D32);
+const Color editBlue = Color(0xFF1565C0);
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -40,7 +49,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text("إضافة منتج جديد"),
+            title: Text("إضافة منتج جديد", 
+              style: GoogleFonts.cairo(color: successGreen, fontWeight: FontWeight.w700)),
             content: SingleChildScrollView( // ضفناها حتى الشاشة ما تضيق
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -48,13 +58,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   // 👇 عرض الصورة المختارة أو أيقونة افتراضية 👇
                   Container(
                     width: 100, height: 100,
-                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.orange)),
+                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10), border: Border.all(color: accentGold)),
                     child: selectedImagePath != null
                         ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(selectedImagePath!), fit: BoxFit.cover))
                         : const Icon(Icons.image, size: 50, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: accentGold, foregroundColor: Colors.black),
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
                       if (result != null) {
@@ -62,7 +73,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       }
                     },
                     icon: const Icon(Icons.upload_file),
-                    label: const Text("اختيار صورة"),
+                    label: Text("اختيار صورة", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
                   ),
                   const Divider(),
                   
@@ -81,6 +92,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: successGreen, foregroundColor: Colors.white),
                 onPressed: () async {
                   if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                     await DatabaseHelper.instance.addProduct({
@@ -94,7 +106,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     _loadData(); 
                   }
                 },
-                child: const Text("حفظ"),
+                child: Text("حفظ", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
               ),
             ],
           );
@@ -114,20 +126,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text("تعديل المنتج"),
+            title: Text("تعديل المنتج", 
+              style: GoogleFonts.cairo(color: editBlue, fontWeight: FontWeight.w700)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     width: 100, height: 100,
-                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.blue)),
+                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10), border: Border.all(color: editBlue)),
                     child: selectedImagePath != null && File(selectedImagePath!).existsSync()
                         ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(selectedImagePath!), fit: BoxFit.cover))
                         : const Icon(Icons.image, size: 50, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: editBlue, foregroundColor: Colors.white),
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
                       if (result != null) {
@@ -135,7 +149,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       }
                     },
                     icon: const Icon(Icons.edit),
-                    label: const Text("تغيير الصورة"),
+                    label: Text("تغيير الصورة", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
                   ),
                   const Divider(),
 
@@ -154,7 +168,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(backgroundColor: editBlue, foregroundColor: Colors.white),
                 onPressed: () async {
                   if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                     await DatabaseHelper.instance.updateProduct(
@@ -169,7 +183,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     _loadData(); 
                   }
                 },
-                child: const Text("تحديث"),
+                child: Text("تحديث", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
               ),
             ],
           );
@@ -186,7 +200,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("إدارة المنتجات"), backgroundColor: Colors.orange[300]),
+      appBar: AppBar(
+        title: Text("إدارة المنتجات", 
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: accentGold,
+        foregroundColor: Colors.black,
+      ),
       body: _products.isEmpty
           ? const Center(child: Text("لا توجد منتجات، اضغط على + للإضافة."))
           : ListView.builder(
@@ -202,24 +221,32 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     // 👇 عرض الصورة باللستة الدائرية 👇
                     leading: CircleAvatar(
                       radius: 25,
-                      backgroundColor: Colors.orange[100],
+                      backgroundColor: accentGold.withOpacity(0.3),
                       backgroundImage: hasImage ? FileImage(File(imgPath)) : null,
-                      child: hasImage ? null : const Icon(Icons.fastfood, color: Colors.orange),
+                      child: hasImage ? null : const Icon(Icons.fastfood, color: accentGold),
                     ),
-                    title: Text(product['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("${product['price']} دينار | ${product['category'] ?? 'بدون تصنيف'}", style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                    title: Text(product['name'], 
+                      style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                    subtitle: Text("${product['price']} دينار | ${product['category'] ?? 'بدون تصنيف'}", 
+                      style: GoogleFonts.cairo(color: successGreen, fontWeight: FontWeight.bold)),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _showEditProductDialog(product)),
-                        IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteProduct(product['id'])),
+                        IconButton(icon: const Icon(Icons.edit, color: editBlue), onPressed: () => _showEditProductDialog(product)),
+                        IconButton(icon: const Icon(Icons.delete, color: busyRed), onPressed: () => _deleteProduct(product['id'])),
                       ],
                     ),
                   ),
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(backgroundColor: Colors.orange, onPressed: _showAddProductDialog, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: accentGold,
+        foregroundColor: Colors.black,
+        onPressed: _showAddProductDialog,
+        icon: const Icon(Icons.add),
+        label: Text("منتج جديد", style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+      ),
     );
   }
 }

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color successGreen = Color(0xFF2E7D32);
 
 class PrinterSettingsScreen extends StatefulWidget {
   const PrinterSettingsScreen({super.key});
@@ -46,7 +52,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('تم تعيين طابعة $role بنجاح!'),
-            backgroundColor: Colors.green,
+            backgroundColor: successGreen,
           ),
         );
       }
@@ -57,9 +63,10 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('إعدادات الطابعات',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.orange[300],
+        title: Text('إعدادات الطابعات',
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: accentGold,
+        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),

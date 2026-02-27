@@ -6,7 +6,12 @@ import '../widgets/main_drawer.dart';
 import '../widgets/table_card.dart'; // 👇 استدعاء ويدجت الكافتريا
 
 import 'table_details_screen.dart';
-import 'settings_screen.dart'; 
+import 'settings_screen.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color surfaceBeige = Color(0xFFF5E6D3); 
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,22 +20,19 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   bool _isListeningForSecret = false;
   final List<String> _secretBuffer = [];
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
   }
 
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -71,104 +73,41 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryBrown = Color(0xFF3E2723);
-    const Color accentGold = Color(0xFFD4AF37);
-    const Color surfaceBeige = Color(0xFFF5E6D3);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "☕ لمة كافيه - نظام الكاشير",
-          style: GoogleFonts.cairo(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: primaryBrown,
-        centerTitle: true,
-        elevation: 8,
-        shadowColor: primaryBrown.withOpacity(0.5),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: TabBar(
-            controller: _tabController,
+    return DefaultTabController(
+      length: 2, 
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("نظام كاشير الكفتريا", 
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+          backgroundColor: primaryBrown,
+          centerTitle: true,
+          bottom: const TabBar(
             labelColor: accentGold,
-            unselectedLabelColor: Colors.white60,
+            unselectedLabelColor: Colors.white70,
             indicatorColor: accentGold,
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicator: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: accentGold, width: 3),
-              ),
-            ),
-            labelStyle: GoogleFonts.cairo(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            indicatorWeight: 4,
+            labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             tabs: [
-              Tab(
-                icon: const Icon(Icons.restaurant_menu, size: 24),
-                text: " صالة الكافتريا",
-              ),
-              Tab(
-                icon: const Icon(Icons.sports_esports, size: 24),
-                text: " صالة الألعاب",
-              ),
+              Tab(icon: Icon(Icons.restaurant), text: " صالة الكافتريا"),
+              Tab(icon: Icon(Icons.sports_esports), text: " صالة الألعاب"),
             ],
           ),
         ),
-      ),
-      
-      drawer: MainDrawer(onRefresh: refreshScreen),
-      
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              surfaceBeige,
-              surfaceBeige.withOpacity(0.7),
-            ],
-          ),
-        ),
-        child: TabBarView(
-          controller: _tabController,
+        
+        drawer: MainDrawer(onRefresh: refreshScreen), 
+        body: TabBarView(
           children: [
             // ================= التبويب الأول: صالة الكافتريا =================
             FutureBuilder<List<Map<String, dynamic>>>(
               future: DatabaseHelper.instance.getTables(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "لا توجد طاولات حالياً.",
-                      style: GoogleFonts.cairo(
-                        fontSize: 18,
-                        color: primaryBrown,
-                      ),
-                    ),
-                  );
-                }
+                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text("لا توجد طاولات حالياً."));
                 return GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 8,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 80),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 12, mainAxisSpacing: 12),
                   itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) => TableCard(
-                    tableNumber: snapshot.data![index]['table_number'],
-                    isGamingTable: false,
-                  ),
+                  itemBuilder: (context, index) => TableCard(tableNumber: snapshot.data![index]['table_number'], isGamingTable: false), 
                 );
               },
             ),
@@ -177,69 +116,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             FutureBuilder<List<Map<String, dynamic>>>(
               future: DatabaseHelper.instance.getGamingTables(), 
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "يرجى إضافة طاولات ألعاب من الإعدادات.",
-                      style: GoogleFonts.cairo(
-                        fontSize: 18,
-                        color: primaryBrown,
-                      ),
-                    ),
-                  );
-                }
+                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text("يرجى إضافة طاولات ألعاب من الإعدادات."));
                 return GridView.builder(
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 6,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.0,
-                  ),
+                  padding: const EdgeInsets.all(15),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, crossAxisSpacing: 15, mainAxisSpacing: 15, childAspectRatio: 1.0),
                   itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) => TableCard(
-                    tableNumber: snapshot.data![index]['table_number'],
-                    isGamingTable: true,
-                  ),
+                  itemBuilder: (context, index) => TableCard(tableNumber: snapshot.data![index]['table_number'], isGamingTable: true),
                 );
               },
             ),
           ],
         ),
-      ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        child: FloatingActionButton.extended(
-          backgroundColor: const Color(0xFF558B2F),
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: Colors.green[600],
+          elevation: 10,
           onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TableDetailsScreen(tableNumber: 0),
-              ),
-            );
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => const TableDetailsScreen(tableNumber: 0)));
             refreshScreen(); 
           },
           icon: const Icon(Icons.takeout_dining, size: 28, color: Colors.white),
-          label: Text(
-            "طلب سَفَري جديد (Takeaway)",
-            style: GoogleFonts.cairo(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
+          label: const Text("طلب سَفَري جديد (Takeaway)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
         ),
       ),
     );

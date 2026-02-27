@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/database_helper.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color busyRed = Color(0xFFD32F2F);
+const Color successGreen = Color(0xFF2E7D32);
 
 class TableSettingsScreen extends StatefulWidget {
   const TableSettingsScreen({super.key});
@@ -55,8 +62,9 @@ class _TableSettingsScreenState extends State<TableSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("إدارة الطاولات"),
-        backgroundColor: Colors.orange[400],
+        title: Text("إدارة الطاولات",
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: primaryBrown,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

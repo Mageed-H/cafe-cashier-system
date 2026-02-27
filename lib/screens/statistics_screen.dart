@@ -1,7 +1,15 @@
 // ignore_for_file: unused_field
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/database_helper.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color surfaceBeige = Color(0xFFF5E6D3);
+const Color successGreen = Color(0xFF2E7D32);
+const Color busyRed = Color(0xFFD32F2F);
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -90,12 +98,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("الإحصائيات والصندوق"),
-        backgroundColor: Colors.orange[300],
+        title: Text("الإحصائيات والصندوق",
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: primaryBrown,
         actions: [
           IconButton(
               tooltip: "تحديد تاريخ معين",
-              icon: const Icon(Icons.calendar_month, color: Colors.black87),
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
               onPressed: _pickDate),
         ],
       ),
@@ -112,14 +121,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
-                              const Text("المبيعات",
-                                  style: TextStyle(
+                              Text("المبيعات",
+                                  style: GoogleFonts.cairo(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green)),
+                                      color: successGreen)),
                               Text("$_totalRevenue",
-                                  style: const TextStyle(
+                                  style: GoogleFonts.cairo(
                                       fontSize: 16,
-                                      color: Colors.green,
+                                      color: successGreen,
                                       fontWeight: FontWeight.bold))
                             ])))),
                 Expanded(
@@ -128,30 +137,30 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
-                              const Text("المصروفات",
-                                  style: TextStyle(
+                              Text("المصروفات",
+                                  style: GoogleFonts.cairo(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.red)),
+                                      color: busyRed)),
                               Text("$_totalExpenses",
-                                  style: const TextStyle(
+                                  style: GoogleFonts.cairo(
                                       fontSize: 16,
-                                      color: Colors.red,
+                                      color: busyRed,
                                       fontWeight: FontWeight.bold))
                             ])))),
                 Expanded(
                     child: Card(
-                        color: Colors.blue[50],
+                        color: accentGold.withValues(alpha: 0.2),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
-                              const Text("الصافي بالدرج",
-                                  style: TextStyle(
+                              Text("الصافي بالدرج",
+                                  style: GoogleFonts.cairo(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.blue)),
+                                      color: accentGold)),
                               Text("$netCash",
-                                  style: const TextStyle(
+                                  style: GoogleFonts.cairo(
                                       fontSize: 16,
-                                      color: Colors.blue,
+                                      color: accentGold,
                                       fontWeight: FontWeight.bold))
                             ])))),
               ],

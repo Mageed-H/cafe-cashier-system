@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/database_helper.dart';
+
+// 🎨 Brand Colors
+const Color primaryBrown = Color(0xFF3E2723);
+const Color accentGold = Color(0xFFD4AF37);
+const Color gamingPurple = Color(0xFF7B1FA2);
+const Color successGreen = Color(0xFF2E7D32);
+const Color busyRed = Color(0xFFD32F2F);
 
 class GamingSettingsScreen extends StatefulWidget {
   const GamingSettingsScreen({super.key});
@@ -76,7 +84,11 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("إعدادات صالة الألعاب"), backgroundColor: Colors.purple[400], foregroundColor: Colors.white),
+      appBar: AppBar(
+        title: Text("إعدادات صالة الألعاب", 
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: gamingPurple, 
+        foregroundColor: Colors.white),
       body: ListView(
         padding: const EdgeInsets.all(15.0),
         children: [
@@ -87,7 +99,8 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
-                  const Text("قائمة أسعار الساعة (بالدينار):", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.purple)),
+                  Text("قائمة أسعار الساعة (بالدينار):", 
+                    style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: gamingPurple)),
                   const SizedBox(height: 10),
                   Row(children: [Expanded(child: TextField(controller: _ps4Single, decoration: const InputDecoration(labelText: "PS4 فردي", border: OutlineInputBorder()))), const SizedBox(width: 5), Expanded(child: TextField(controller: _ps4Multi, decoration: const InputDecoration(labelText: "PS4 زوجي", border: OutlineInputBorder())))]),
                   const SizedBox(height: 10),
@@ -104,13 +117,18 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
           const Divider(thickness: 2, height: 30),
           
           // إدارة طاولات الألعاب
-          const Text("طاولات قسم الألعاب:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.purple)),
+          Text("طاولات قسم الألعاب:", 
+            style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: gamingPurple)),
           const SizedBox(height: 10),
           Row(
             children: [
               Expanded(child: TextField(controller: _tableController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "رقم طاولة الألعاب", border: OutlineInputBorder()))),
               const SizedBox(width: 10),
-              SizedBox(height: 55, child: ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white), onPressed: _addTable, icon: const Icon(Icons.add), label: const Text("إضافة"))),
+              SizedBox(height: 55, child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(backgroundColor: successGreen, foregroundColor: Colors.white), 
+                onPressed: _addTable, 
+                icon: const Icon(Icons.add), 
+                label: Text("إضافة", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)))),
             ],
           ),
           const SizedBox(height: 15),
@@ -122,11 +140,11 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
             itemBuilder: (context, index) {
               int tNum = _tables[index]['table_number'];
               return Card(
-                color: Colors.purple[50],
+                color: gamingPurple.withOpacity(0.1),
                 child: Stack(
                   children: [
-                    Center(child: Text("طاولة ألعاب\n$tNum", textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold))),
-                    Positioned(top: 0, right: 0, child: IconButton(icon: const Icon(Icons.delete, color: Colors.red, size: 20), onPressed: () => _deleteTable(tNum))),
+                    Center(child: Text("طاولة ألعاب\n$tNum", textAlign: TextAlign.center, style: GoogleFonts.cairo(fontWeight: FontWeight.bold))),
+                    Positioned(top: 0, right: 0, child: IconButton(icon: const Icon(Icons.delete, color: busyRed, size: 20), onPressed: () => _deleteTable(tNum))),
                   ],
                 ),
               );
