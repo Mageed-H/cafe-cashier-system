@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/database_helper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -962,320 +963,674 @@ class _TableDetailsScreenState extends State<TableDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color surfaceBeige = Color(0xFFF5E6D3);
+
     List<Map<String, dynamic>> displayedProducts = _selectedCategory == 'الكل'
         ? _products
         : _products.where((p) => p['category'] == _selectedCategory).toList();
     String title = widget.isGamingTable
         ? "🎮 طاولة ألعاب ${widget.tableNumber}"
         : (widget.tableNumber == 0
-            ? "طلب سَفَري"
-            : "طاولة رقم ${widget.tableNumber}");
+            ? "🛵 طلب سَفَري"
+            : "☕ طاولة ${widget.tableNumber}");
 
     return Scaffold(
       appBar: AppBar(
-          title:
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor:
-              widget.isGamingTable ? Colors.purple[400] : Colors.orange[300],
-          foregroundColor: Colors.white),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                if (widget.isGamingTable)
-                  SizedBox(
-                    height: 125,
+        title: Text(
+          title,
+          style: GoogleFonts.cairo(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: widget.isGamingTable
+            ? const Color(0xFF7B1FA2)
+            : const Color(0xFF6D4C41),
+        elevation: 8,
+        shadowColor: primaryBrown.withOpacity(0.5),
+        foregroundColor: Colors.white,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [surfaceBeige, surfaceBeige.withOpacity(0.8)],
+          ),
+        ),
+        child: Row(
+          children: [
+            // ================= LEFT PANEL: PRODUCTS =================
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  // Gaming Timers
+                  if (widget.isGamingTable)
+                    Container(
+                      height: 140,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryBrown.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _timers.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == _timers.length) {
+                            return Container(
+                              width: 100,
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accentGold.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: accentGold,
+                                  width: 2,
+                                ),
+                              ),
+                              child: InkWell(
+                                onTap: _showAddDeviceDialog,
+                                child: const Icon(
+                                  Icons.add_circle_outline,
+                                  size: 40,
+                                  color: accentGold,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return SubTimerCard(
+                            timerData: _timers[index],
+                            onAddToCart: (name, price) {
+                              _addToCart({'name': name, 'price': price});
+                              _loadTimers();
+                            },
+                            onDeleteTimer: () async {
+                              await DatabaseHelper.instance
+                                  .deleteTimer(_timers[index]['id']);
+                              _loadTimers();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+
+                  // Categories Filter
+                  Container(
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.7),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryBrown.withOpacity(0.1),
+                          width: 1,
+                        ),
+                      ),
+                    ),
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _timers.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == _timers.length) {
-                          return Container(
-                            width: 80,
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.purple[100],
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                    color: Colors.purple,
-                                    style: BorderStyle.solid)),
-                            child: IconButton(
-                              icon: const Icon(Icons.add_circle,
-                                  size: 40, color: Colors.purple),
-                              onPressed: _showAddDeviceDialog,
-                              tooltip: "إضافة جهاز آخر",
+                      itemCount: _dbCategories.length,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 12,
+                        ),
+                        child: ChoiceChip(
+                          label: Text(
+                            _dbCategories[index],
+                            style: GoogleFonts.cairo(
+                              fontWeight: FontWeight.w600,
                             ),
-                          );
-                        }
+                          ),
+                          selected: _dbCategories[index] == _selectedCategory,
+                          selectedColor: accentGold,
+                          labelStyle: GoogleFonts.cairo(
+                            color: _dbCategories[index] == _selectedCategory
+                                ? primaryBrown
+                                : primaryBrown.withOpacity(0.6),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          backgroundColor: Colors.white,
+                          side: BorderSide(
+                            color: _dbCategories[index] == _selectedCategory
+                                ? accentGold
+                                : primaryBrown.withOpacity(0.2),
+                            width: 2,
+                          ),
+                          onSelected: (s) {
+                            setState(() {
+                              _selectedCategory = _dbCategories[index];
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
 
-                        return SubTimerCard(
-                          timerData: _timers[index],
-                          onAddToCart: (name, price) {
-                            _addToCart({'name': name, 'price': price});
-                            _loadTimers();
-                          },
-                          onDeleteTimer: () async {
-                            await DatabaseHelper.instance
-                                .deleteTimer(_timers[index]['id']);
-                            _loadTimers();
-                          },
+                  // Products Grid
+                  Expanded(
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: displayedProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = displayedProducts[index];
+                        String? imgPath = product['image_path'];
+                        return _buildProductCard(
+                          product: product,
+                          imagePath: imgPath,
+                          onTap: () => _addToCart(product),
                         );
                       },
                     ),
                   ),
-                Container(
-                  height: 60,
-                  color: Colors.grey[100],
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _dbCategories.length,
-                    itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ChoiceChip(
-                            label: Text(_dbCategories[index]),
-                            selected: _dbCategories[index] == _selectedCategory,
-                            onSelected: (s) {
-                              setState(() {
-                                _selectedCategory = _dbCategories[index];
-                              });
-                            })),
+                ],
+              ),
+            ),
+
+            // ================= DIVIDER =================
+            Container(
+              width: 1,
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: primaryBrown.withOpacity(0.15),
+                    width: 1,
                   ),
                 ),
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(10),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.85),
-                    itemCount: displayedProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = displayedProducts[index];
-                      String? imgPath = product['image_path'];
-                      return InkWell(
-                        onTap: () => _addToCart(product),
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 3,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                  flex: 3,
-                                  child: imgPath != null &&
-                                          File(imgPath).existsSync()
-                                      ? Image.file(File(imgPath),
-                                          width: double.infinity,
-                                          fit: BoxFit.cover)
-                                      : Container(
-                                          width: double.infinity,
-                                          color: Colors.orange[50],
-                                          child: const Icon(Icons.fastfood,
-                                              size: 40, color: Colors.orange))),
-                              Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(product['name'],
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 1),
-                                        Text("${product['price']}",
-                                            style: const TextStyle(
-                                                color: Colors.green,
-                                                fontWeight: FontWeight.bold))
-                                      ])),
-                            ],
+              ),
+            ),
+
+            // ================= RIGHT PANEL: INVOICE =================
+            Expanded(
+              flex: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.6),
+                  border: Border(
+                    left: BorderSide(
+                      color: primaryBrown.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Invoice Header
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            primaryBrown,
+                            primaryBrown.withOpacity(0.85),
+                          ],
+                        ),
+                      ),
+                      child: Text(
+                        "📋 الفاتورة",
+                        style: GoogleFonts.cairo(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    // Cart Items
+                    Expanded(
+                      child: _cart.isEmpty
+                          ? Center(
+                              child: Text(
+                                "الفاتورة فارغة",
+                                style: GoogleFonts.cairo(
+                                  color: primaryBrown.withOpacity(0.5),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: _cart.length,
+                              itemBuilder: (context, index) {
+                                final item = _cart[index];
+                                bool isGameProduct =
+                                    item['name'].toString().startsWith('لعب');
+                                return _buildCartItem(
+                                  item: item,
+                                  index: index,
+                                  isGameProduct: isGameProduct,
+                                );
+                              },
+                            ),
+                    ),
+
+                    // Totals and Actions
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(
+                            color: primaryBrown.withOpacity(0.1),
+                            width: 1,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const VerticalDivider(width: 1),
-          // ================= الفاتورة =================
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                const Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Text("الفاتورة",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold))),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _cart.length,
-                    itemBuilder: (context, index) {
-                      final item = _cart[index];
-                      bool isGameProduct =
-                          item['name'].toString().startsWith('لعب');
-                      return Card(
-                        child: ListTile(
-                          title: Text(item['name'],
-                              style: TextStyle(
-                                  color: isGameProduct
-                                      ? Colors.purple
-                                      : Colors.black,
-                                  fontWeight:
-                                      isGameProduct ? FontWeight.bold : null,
-                                  fontSize: 12)),
-                          subtitle: Text("${item['price'] * item['quantity']}"),
-                          trailing: isGameProduct
-                              ? IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
-                                  onPressed: () {
-                                    setState(() {
-                                      _cart.removeAt(index);
-                                    });
-                                    _autoSaveCart();
-                                  })
-                              : Row(mainAxisSize: MainAxisSize.min, children: [
-                                  IconButton(
-                                      icon: const Icon(Icons.remove_circle),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (item['quantity'] > 1) {
-                                            item['quantity']--;
-                                          } else {
-                                            _cart.removeAt(index);
-                                          }
-                                        });
-                                        _autoSaveCart();
-                                      }),
-                                  Text("${item['quantity']}"),
-                                  IconButton(
-                                      icon: const Icon(Icons.add_circle),
-                                      onPressed: () {
-                                        setState(() {
-                                          item['quantity']++;
-                                        });
-                                        _autoSaveCart();
-                                      }),
-                                ]),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      if (_discount > 0) ...[
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("المجموع:"),
-                              Text("$_subTotal")
-                            ]),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("الخصم:",
-                                  style: TextStyle(color: Colors.red)),
-                              Text("$_discount -",
-                                  style: const TextStyle(color: Colors.red))
-                            ]),
-                        const Divider(),
-                      ],
-
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("النهائي:",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("$_finalPrice",
-                                style: const TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold))
-                          ]),
-
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                              onPressed:
-                                  _cart.isEmpty ? null : _showDiscountDialog,
-                              child: const Text("خصم/تعديل"))),
-
-                      // 👇 التعديل الثالث: زر طباعة طلب الشيف 👇
-                      SizedBox(
-                          width: double.infinity,
-                          height: 45,
-                          child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.deepOrange,
-                                  foregroundColor: Colors.white),
-                              onPressed:
-                                  _cart.isEmpty ? null : _printChefReceipt,
-                              icon: const Icon(Icons.soup_kitchen),
-                              label: const Text("طباعة طلب الشيف",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)))),
-                      const SizedBox(height: 10),
-
-                      SizedBox(
-                          width: double.infinity,
-                          height: 45,
-                          child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white),
-                              onPressed: _cart.isEmpty ? null : _printReceipt,
-                              icon: const Icon(Icons.receipt_long),
-                              label: const Text("طباعة الفاتورة",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)))),
-
-                      const SizedBox(height: 10),
-
-                      Row(
+                      ),
+                      child: Column(
                         children: [
-                          Expanded(
-                              child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white),
+                          if (_discount > 0) ...[
+                            _buildTotalRow("المجموع", "$_subTotal"),
+                            _buildTotalRow(
+                              "الخصم",
+                              "- $_discount",
+                              isDiscount: true,
+                            ),
+                            const Divider(height: 16),
+                          ],
+                          _buildTotalRow(
+                            "النهائي",
+                            "$_finalPrice",
+                            isTotal: true,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                            ),
+                            onPressed: _cart.isEmpty
+                                ? null
+                                : _showDiscountDialog,
+                            child: Text(
+                              "خصم/تعديل",
+                              style: GoogleFonts.cairo(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildActionButton(
+                            label: "طباعة طلب الشيف 👨‍🍳",
+                            color: const Color(0xFFD84315),
+                            icon: Icons.soup_kitchen,
+                            onPressed:
+                                _cart.isEmpty ? null : _printChefReceipt,
+                          ),
+                          const SizedBox(height: 10),
+                          _buildActionButton(
+                            label: "طباعة الفاتورة 🧾",
+                            color: const Color(0xFF1565C0),
+                            icon: Icons.receipt_long,
+                            onPressed: _cart.isEmpty ? null : _printReceipt,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildActionButton(
+                                  label: "تأكيد الدفع ✓",
+                                  color: const Color(0xFF2E7D32),
+                                  icon: Icons.check_circle,
                                   onPressed: _cart.isEmpty
                                       ? null
                                       : _showConfirmPaymentDialog,
-                                  icon: const Icon(Icons.check_circle),
-                                  label: const Text("تأكيد الدفع"))),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                      foregroundColor: Colors.white),
-                                  onPressed:
-                                      _cart.isEmpty ? null : _cancelOrder,
-                                  icon: const Icon(Icons.cancel),
-                                  label: const Text("إلغاء"))),
+                                  isSmall: true,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildActionButton(
+                                  label: "إلغاء",
+                                  color: const Color(0xFFC62828),
+                                  icon: Icons.cancel,
+                                  onPressed: _cart.isEmpty ? null : _cancelOrder,
+                                  isSmall: true,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductCard({
+    required Map<String, dynamic> product,
+    required String? imagePath,
+    required VoidCallback onTap,
+  }) {
+    const Color accentGold = Color(0xFFD4AF37);
+
+    return MouseRegion(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: accentGold.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    color: const Color(0xFFFFF8E1),
+                    child: imagePath != null && File(imagePath).existsSync()
+                        ? Image.file(
+                            File(imagePath),
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Icon(
+                            Icons.fastfood,
+                            size: 48,
+                            color: accentGold.withOpacity(0.6),
+                          ),
                   ),
-                )
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.white, Colors.white70],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          product['name'],
+                          style: GoogleFonts.cairo(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: const Color(0xFF2C2C2C),
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: accentGold.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "${product['price']} د",
+                            style: GoogleFonts.cairo(
+                              color: const Color(0xFF3E2723),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCartItem({
+    required Map<String, dynamic> item,
+    required int index,
+    required bool isGameProduct,
+  }) {
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color primaryBrown = Color(0xFF3E2723);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        border: Border.all(
+          color: isGameProduct ? Colors.purple.withOpacity(0.3) : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    item['name'],
+                    style: GoogleFonts.cairo(
+                      color: isGameProduct ? Colors.purple : primaryBrown,
+                      fontWeight:
+                          isGameProduct ? FontWeight.w700 : FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (isGameProduct)
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _cart.removeAt(index);
+                      });
+                      _autoSaveCart();
+                    },
+                    child: const Icon(
+                      Icons.delete,
+                      color: Color(0xFFC62828),
+                      size: 20,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "${item['price'] * item['quantity']} د",
+                  style: GoogleFonts.cairo(
+                    color: accentGold,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                if (!isGameProduct)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            if (item['quantity'] > 1) {
+                              item['quantity']--;
+                            } else {
+                              _cart.removeAt(index);
+                            }
+                          });
+                          _autoSaveCart();
+                        },
+                        child: const Icon(
+                          Icons.remove_circle_outline,
+                          size: 18,
+                          color: Color(0xFFC62828),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accentGold.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          "${item['quantity']}",
+                          style: GoogleFonts.cairo(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            item['quantity']++;
+                          });
+                          _autoSaveCart();
+                        },
+                        child: const Icon(
+                          Icons.add_circle_outline,
+                          size: 18,
+                          color: Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(
+    String label,
+    String value, {
+    bool isDiscount = false,
+    bool isTotal = false,
+  }) {
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color accentGold = Color(0xFFD4AF37);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.cairo(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w600,
+              color: isDiscount
+                  ? const Color(0xFFC62828)
+                  : (isTotal ? primaryBrown : primaryBrown.withOpacity(0.7)),
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.cairo(
+              fontSize: isTotal ? 18 : 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w600,
+              color: isDiscount
+                  ? const Color(0xFFC62828)
+                  : (isTotal ? accentGold : primaryBrown),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required Color color,
+    required IconData icon,
+    required VoidCallback? onPressed,
+    bool isSmall = false,
+  }) {
+    return SizedBox(
+      height: isSmall ? 40 : 48,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: onPressed,
+        icon: Icon(icon, size: isSmall ? 18 : 20),
+        label: Text(
+          label,
+          style: GoogleFonts.cairo(
+            fontSize: isSmall ? 12 : 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
@@ -1392,6 +1747,9 @@ class _SubTimerCardState extends State<SubTimerCard> {
 
   @override
   Widget build(BuildContext context) {
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color primaryBrown = Color(0xFF3E2723);
+
     int h = _elapsedSeconds ~/ 3600;
     int m = (_elapsedSeconds % 3600) ~/ 60;
     int s = _elapsedSeconds % 60;
@@ -1399,79 +1757,182 @@ class _SubTimerCardState extends State<SubTimerCard> {
         '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
 
     return Container(
-      width: 220,
-      margin: const EdgeInsets.only(right: 10, top: 5, bottom: 5),
-      padding: const EdgeInsets.all(8),
+      width: 240,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-          color: _isPlaying ? Colors.purple[50] : Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              color: _isPlaying ? Colors.purple : Colors.grey[300]!)),
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            _isPlaying
+                ? const Color(0xFF7B1FA2).withOpacity(0.15)
+                : Colors.white,
+            _isPlaying ? Colors.purple.withOpacity(0.05) : Colors.white,
+          ],
+        ),
+        border: Border.all(
+          color: _isPlaying ? Colors.purple.withOpacity(0.6) : accentGold,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _isPlaying
+                ? Colors.purple.withOpacity(0.2)
+                : primaryBrown.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Stack(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Device Name + Mode
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.timerData['device_name'],
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    widget.timerData['device_name'],
+                    style: GoogleFonts.cairo(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      color: primaryBrown,
+                    ),
+                  ),
                   const SizedBox(width: 10),
                   InkWell(
-                      onTap: _toggleMode,
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                              color: _mode == 'single'
-                                  ? Colors.blue[100]
-                                  : Colors.green[100],
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(_mode == 'single' ? "فردي" : "زوجي",
-                              style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold)))),
+                    onTap: _toggleMode,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _mode == 'single'
+                            ? const Color(0xFF1565C0).withOpacity(0.2)
+                            : const Color(0xFF2E7D32).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _mode == 'single'
+                              ? const Color(0xFF1565C0)
+                              : const Color(0xFF2E7D32),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        _mode == 'single' ? "🧑 فردي" : "👥 زوجي",
+                        style: GoogleFonts.cairo(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _mode == 'single'
+                              ? const Color(0xFF1565C0)
+                              : const Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 5),
-              Text(time,
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _isPlaying ? Colors.red : Colors.black,
-                      fontFamily: 'monospace')),
-              const SizedBox(height: 5),
+              const SizedBox(height: 12),
+
+              // Timer Display
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: _isPlaying ? Colors.red.withOpacity(0.1) : accentGold.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _isPlaying ? Colors.red.withOpacity(0.5) : accentGold.withOpacity(0.5),
+                    width: 1.5,
+                  ),
+                ),
+                child: Text(
+                  time,
+                  style: GoogleFonts.cairo(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: _isPlaying ? Colors.red : accentGold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Control Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: _isPlaying ? Colors.orange : Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
                       icon: Icon(
-                          _isPlaying ? Icons.pause_circle : Icons.play_circle,
-                          color: _isPlaying ? Colors.orange : Colors.green,
-                          size: 30),
+                        _isPlaying ? Icons.pause_circle : Icons.play_circle,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                       onPressed: _isPlaying ? _pause : _play,
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints()),
-                  IconButton(
-                      icon: const Icon(Icons.add_shopping_cart,
-                          color: Colors.red, size: 28),
+                      constraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.add_shopping_cart,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                       onPressed: _elapsedSeconds > 0 && !_isPlaying
                           ? _stopAndAdd
                           : null,
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints()),
+                      constraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
+                      ),
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
+
+          // Delete Button
           if (!_isPlaying && _elapsedSeconds == 0)
             Positioned(
-              top: -10,
-              right: -10,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.grey, size: 20),
-                onPressed: widget.onDeleteTimer,
+              top: 0,
+              right: 0,
+              child: Transform.translate(
+                offset: const Offset(6, -6),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: InkWell(
+                    onTap: widget.onDeleteTimer,
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.grey,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
             ),
         ],

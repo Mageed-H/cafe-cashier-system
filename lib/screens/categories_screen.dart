@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/database_helper.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -17,7 +18,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     _loadCategories();
   }
 
-  // جلب التصنيفات من قاعدة البيانات
   void _loadCategories() async {
     final cats = await DatabaseHelper.instance.getCategories();
     setState(() {
@@ -25,167 +25,577 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     });
   }
 
-  // دالة إضافة تصنيف جديد
   void _showAddCategoryDialog() {
     final TextEditingController controller = TextEditingController();
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color categoryColor = Color(0xFF7B1FA2);
+    const Color surfaceBeige = Color(0xFFF5E6D3);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("إضافة تصنيف جديد", style: TextStyle(color: Colors.purple)),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: "اسم التصنيف",
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.category, color: Colors.purple),
+      builder: (context) => Dialog(
+        backgroundColor: surfaceBeige,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [surfaceBeige, surfaceBeige.withValues(alpha: 0.8)],
+            ),
+            border: Border.all(
+              color: categoryColor.withValues(alpha: 0.5),
+              width: 2,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: categoryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.category,
+                  color: categoryColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "إضافة تصنيف جديد",
+                style: GoogleFonts.cairo(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: primaryBrown,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  labelText: "اسم التصنيف",
+                  labelStyle: GoogleFonts.cairo(
+                    color: primaryBrown.withValues(alpha: 0.7),
+                  ),
+                  prefixIcon: Icon(Icons.category, color: categoryColor),
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 1.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 2.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "إلغاء",
+                        style: GoogleFonts.cairo(
+                          color: primaryBrown,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: categoryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        String newCat = controller.text.trim();
+                        if (newCat.isNotEmpty) {
+                          int result =
+                              await DatabaseHelper.instance.addCategory(newCat);
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+
+                          if (result == -1) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "هذا التصنيف موجود مسبقاً!",
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor:
+                                    const Color(0xFFC62828),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          } else {
+                            _loadCategories();
+                          }
+                        }
+                      },
+                      child: Text(
+                        "حفظ",
+                        style: GoogleFonts.cairo(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-            onPressed: () async {
-              String newCat = controller.text.trim();
-              if (newCat.isNotEmpty) {
-                int result = await DatabaseHelper.instance.addCategory(newCat);
-                if (!context.mounted) return;
-                Navigator.pop(context);
-                
-                if (result == -1) {
-                  // معناها التصنيف موجود مسبقاً (Unique Constraint)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("هذا التصنيف موجود مسبقاً!"), backgroundColor: Colors.red),
-                  );
-                } else {
-                  _loadCategories(); // تحديث الشاشة
-                }
-              }
-            },
-            child: const Text("حفظ"),
-          ),
-        ],
       ),
     );
   }
 
-  // دالة تعديل اسم التصنيف
   void _showEditCategoryDialog(String oldName) {
-    final TextEditingController controller = TextEditingController(text: oldName);
+    final TextEditingController controller =
+        TextEditingController(text: oldName);
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color categoryColor = Color(0xFF1565C0);
+    const Color surfaceBeige = Color(0xFFF5E6D3);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("تعديل التصنيف", style: TextStyle(color: Colors.blue)),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: "الاسم الجديد",
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.edit, color: Colors.blue),
+      builder: (context) => Dialog(
+        backgroundColor: surfaceBeige,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [surfaceBeige, surfaceBeige.withValues(alpha: 0.8)],
+            ),
+            border: Border.all(
+              color: categoryColor.withValues(alpha: 0.5),
+              width: 2,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: categoryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.edit,
+                  color: categoryColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "تعديل التصنيف",
+                style: GoogleFonts.cairo(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: primaryBrown,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  labelText: "الاسم الجديد",
+                  labelStyle: GoogleFonts.cairo(
+                    color: primaryBrown.withValues(alpha: 0.7),
+                  ),
+                  prefixIcon: Icon(Icons.edit, color: categoryColor),
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 1.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentGold, width: 2.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "إلغاء",
+                        style: GoogleFonts.cairo(
+                          color: primaryBrown,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: categoryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        String newName = controller.text.trim();
+                        if (newName.isNotEmpty && newName != oldName) {
+                          await DatabaseHelper.instance
+                              .updateCategory(oldName, newName);
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                          _loadCategories();
+                        }
+                      },
+                      child: Text(
+                        "تحديث",
+                        style: GoogleFonts.cairo(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-            onPressed: () async {
-              String newName = controller.text.trim();
-              if (newName.isNotEmpty && newName != oldName) {
-                await DatabaseHelper.instance.updateCategory(oldName, newName);
-                if (!context.mounted) return;
-                Navigator.pop(context);
-                _loadCategories();
-              }
-            },
-            child: const Text("تحديث"),
-          ),
-        ],
       ),
     );
   }
 
-  // دالة حذف التصنيف
   void _deleteCategory(String name) async {
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color accentGold = Color(0xFFD4AF37);
+    const Color errorColor = Color(0xFFC62828);
+    const Color surfaceBeige = Color(0xFFF5E6D3);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("تأكيد الحذف", style: TextStyle(color: Colors.red)),
-        content: Text("هل أنت متأكد من حذف تصنيف ($name)؟\n\nملاحظة: سيتم نقل جميع المنتجات التابعة له إلى تصنيف (أخرى) تلقائياً للحفاظ عليها."),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-            onPressed: () async {
-              await DatabaseHelper.instance.deleteCategory(name);
-              if (!context.mounted) return;
-              Navigator.pop(context);
-              _loadCategories();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("تم الحذف ونقل المنتجات بنجاح."), backgroundColor: Colors.green),
-              );
-            },
-            child: const Text("حذف"),
+      builder: (context) => Dialog(
+        backgroundColor: surfaceBeige,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [surfaceBeige, surfaceBeige.withValues(alpha: 0.8)],
+            ),
+            border: Border.all(
+              color: errorColor.withValues(alpha: 0.5),
+              width: 2,
+            ),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: errorColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.delete_outline,
+                  color: errorColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "تأكيد الحذف",
+                style: GoogleFonts.cairo(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: primaryBrown,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "هل أنت متأكد من حذف تصنيف ($name)؟\n\nملاحظة: سيتم نقل جميع المنتجات التابعة له إلى تصنيف (أخرى) تلقائياً.",
+                style: GoogleFonts.cairo(
+                  fontSize: 14,
+                  color: primaryBrown.withValues(alpha: 0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "إلغاء",
+                        style: GoogleFonts.cairo(
+                          color: primaryBrown,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: errorColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await DatabaseHelper.instance.deleteCategory(name);
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+                        _loadCategories();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "تم الحذف ونقل المنتجات بنجاح.",
+                              style: GoogleFonts.cairo(),
+                            ),
+                            backgroundColor: const Color(0xFF2E7D32),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "حذف",
+                        style: GoogleFonts.cairo(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryBrown = Color(0xFF3E2723);
+    const Color categoryColor = Color(0xFF7B1FA2);
+    const Color surfaceBeige = Color(0xFFF5E6D3);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("إدارة التصنيفات", style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.purple[400], // لون مميز للتصنيفات
-        foregroundColor: Colors.white,
+        title: Text(
+          "📂 إدارة التصنيفات",
+          style: GoogleFonts.cairo(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: categoryColor,
+        elevation: 8,
+        centerTitle: true,
       ),
-      body: _categories.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                
-                // نمنع المستخدم من تعديل أو حذف تصنيف "أخرى" لأنه مهم للنظام
-                bool isDefault = cat == 'أخرى';
-
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.purple[100],
-                      child: const Icon(Icons.category, color: Colors.purple),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [surfaceBeige, surfaceBeige.withValues(alpha: 0.7)],
+          ),
+        ),
+        child: _categories.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.category,
+                      size: 80,
+                      color: primaryBrown.withValues(alpha: 0.3),
                     ),
-                    title: Text(cat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    trailing: isDefault 
-                        ? const Text("تصنيف افتراضي", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.blue),
-                                tooltip: "تعديل",
-                                onPressed: () => _showEditCategoryDialog(cat),
+                    const SizedBox(height: 16),
+                    Text(
+                      "لا توجد تصنيفات",
+                      style: GoogleFonts.cairo(
+                        fontSize: 18,
+                        color: primaryBrown.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final cat = _categories[index];
+                  bool isDefault = cat == 'أخرى';
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: categoryColor.withValues(alpha: 0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color:
+                                    categoryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                tooltip: "حذف",
-                                onPressed: () => _deleteCategory(cat),
+                              child: Icon(
+                                Icons.category,
+                                color: categoryColor,
+                                size: 28,
                               ),
-                            ],
-                          ),
-                  ),
-                );
-              },
-            ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                cat,
+                                style: GoogleFonts.cairo(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: primaryBrown,
+                                ),
+                              ),
+                            ),
+                            if (isDefault)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: categoryColor.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  "افتراضي ⭐",
+                                  style: GoogleFonts.cairo(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: categoryColor,
+                                  ),
+                                ),
+                              )
+                            else
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  InkWell(
+                                    onTap: () =>
+                                        _showEditCategoryDialog(cat),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: const Color(0xFF1565C0),
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  InkWell(
+                                    onTap: () => _deleteCategory(cat),
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Color(0xFFC62828),
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.purple,
-        foregroundColor: Colors.white,
+        backgroundColor: categoryColor,
+        elevation: 12,
         onPressed: _showAddCategoryDialog,
-        icon: const Icon(Icons.add),
-        label: const Text("تصنيف جديد", style: TextStyle(fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.add_circle, size: 28),
+        label: Text(
+          "تصنيف جديد",
+          style: GoogleFonts.cairo(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
