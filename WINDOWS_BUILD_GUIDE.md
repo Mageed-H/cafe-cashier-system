@@ -9,8 +9,10 @@
 
 ## الخطوة 2️⃣: بناء تطبيق Windows Release
 
+**مهم:** هذه الخطوة تتم على جهاز Windows فقط (لا يمكن بناؤها على Linux)
+
 ```bash
-# على جهازك Windows في الـ terminal
+# على جهازك Windows في الـ terminal (PowerShell أو CMD)
 cd C:\path\to\test_project
 
 # بناء النسخة Release
@@ -19,13 +21,15 @@ flutter build windows --release
 
 **النتيجة:** سيتم إنشاء المجلد:
 ```
-build/windows/runner/Release/
+build\windows\runner\Release\
 ```
 
 هذا المجلد يحتوي على:
-- `test_project.exe` (الملف التنفيذي الرئيسي)
-- ملفات DLL المطلوبة
-- الموارد (assets)
+- ✅ `test_project.exe` (الملف التنفيذي الرئيسي)
+- ✅ ملفات DLL المطلوبة (flutter_windows.dll وغيرها)
+- ✅ الموارد (assets)
+
+**⏱️ المدة:** قد يستغرق 5-10 دقائق
 
 ---
 
@@ -94,14 +98,16 @@ Type: dirifempty; Name: "{app}"
 
 ---
 
-## الخطوة 5️⃣: تجميع الـ Installer
+## الخطوة 4️⃣: تجميع الـ Installer على Windows
 
-### الطريقة الأولى: استخدام Inno Setup GUI
+### الطريقة الأولى: استخدام Inno Setup GUI (الأسهل) ✅
 
-1. افتح Inno Setup Compiler
-2. اختر File → Open
-3. اختر ملف `installer.iss`
-4. اضغط Compile
+1. افتح Inno Setup Compiler على Windows
+2. اذهب إلى: File → Open
+3. اختر الملف: `installer.iss` (من جذر المشروع)
+4. اضغط الزر: **Compile**
+5. انتظر قليلاً...
+6. تمام! ستجد الملف الجاهز: `LumahCashier-Setup-1.0.0.exe`
 
 ### الطريقة الثانية: استخدام Command Line
 
@@ -111,8 +117,10 @@ Type: dirifempty; Name: "{app}"
 
 **النتيجة:** سيتم إنشاء ملف:
 ```
-LumahCashier-Setup-1.0.0.exe
+build\windows\runner\Release\LumahCashier-Setup-1.0.0.exe
 ```
+
+هذا هو الملف النهائي اللي توزعه على المستخدمين!
 
 ---
 
@@ -156,13 +164,17 @@ flutter pub run windows_package_installer:create_msix \
 
 ---
 
-## خطوات التثبيت للمستخدم
+## خطوات التثبيت للمستخدم النهائي
 
-1. تحميل `LumahCashier-Setup-1.0.0.exe`
-2. النقر عليه مرتين
-3. اتباع الخطوات البسيطة
-4. اختيار مجلد التثبيت (افتراضياً: `C:\Program Files\LumahCashier`)
-5. اكتمال التثبيت والتشغيل
+```
+1. تحميل ملف: LumahCashier-Setup-1.0.0.exe
+2. النقر عليه مرتين (Double Click)
+3. قراءة الشروط والموافقة
+4. اختيار مجلد التثبيت (افتراضياً: C:\Program Files\LumahCashier)
+5. انتظار انتهاء التثبيت
+6. سيظهر اختصار على سطح المكتب
+7. النقر على الاختصار = تشغيل البرنامج!
+```
 
 ---
 
