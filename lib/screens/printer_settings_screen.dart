@@ -91,6 +91,9 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(_chefPrinterName ?? 'جاري التحميل...'),
                 trailing: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    animationDuration: const Duration(milliseconds: 300),
+                  ),
                   onPressed: () => _pickPrinter(
                       'المطبخ', 'chef_printer_url', 'chef_printer_name'),
                   child: const Text('تغيير'),
@@ -111,6 +114,9 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(_cashierPrinterName ?? 'جاري التحميل...'),
                 trailing: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    animationDuration: const Duration(milliseconds: 300),
+                  ),
                   onPressed: () => _pickPrinter(
                       'الكاشير', 'cashier_printer_url', 'cashier_printer_name'),
                   child: const Text('تغيير'),

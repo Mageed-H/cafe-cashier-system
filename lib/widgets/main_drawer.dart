@@ -41,7 +41,10 @@ class MainDrawer extends StatelessWidget {
                 child: const Text("إلغاء")),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: drawerRed, foregroundColor: Colors.white),
+                  backgroundColor: drawerRed, 
+                  foregroundColor: Colors.white,
+                  animationDuration: const Duration(milliseconds: 300),
+              ),
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
                 final savedPin = prefs.getString('system_pin') ?? "1234";

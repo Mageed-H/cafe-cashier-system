@@ -105,6 +105,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           IconButton(
               tooltip: "تحديد تاريخ معين",
               icon: const Icon(Icons.calendar_month, color: Colors.white),
+              splashColor: Colors.white.withOpacity(0.3),
               onPressed: _pickDate),
         ],
       ),
@@ -117,7 +118,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Expanded(
                     child: Card(
-                        color: Colors.green[50],
+                        color: successGreen.withOpacity(0.08),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
@@ -133,7 +134,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ])))),
                 Expanded(
                     child: Card(
-                        color: Colors.red[50],
+                        color: busyRed.withOpacity(0.08),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
@@ -149,14 +150,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ])))),
                 Expanded(
                     child: Card(
-                        color: accentGold.withValues(alpha: 0.2),
+                        color: accentGold.withOpacity(0.12),
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(children: [
                               Text("الصافي بالدرج",
                                   style: GoogleFonts.cairo(
                                       fontWeight: FontWeight.bold,
-                                      color: accentGold)),
+                                      color: Color(0xFF9A6E26))),
                               Text("$netCash",
                                   style: GoogleFonts.cairo(
                                       fontSize: 16,

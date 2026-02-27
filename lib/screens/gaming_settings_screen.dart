@@ -108,7 +108,16 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
                   const SizedBox(height: 10),
                   Row(children: [Expanded(child: TextField(controller: _billSingle, decoration: const InputDecoration(labelText: "بليارد فردي", border: OutlineInputBorder()))), const SizedBox(width: 5), Expanded(child: TextField(controller: _billMulti, decoration: const InputDecoration(labelText: "بليارد زوجي", border: OutlineInputBorder())))]),
                   const SizedBox(height: 10),
-                  ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white), onPressed: _savePrices, icon: const Icon(Icons.save), label: const Text("حفظ الأسعار"))
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: gamingPurple, 
+                      foregroundColor: Colors.white,
+                      animationDuration: const Duration(milliseconds: 300),
+                    ), 
+                    onPressed: _savePrices, 
+                    icon: const Icon(Icons.save), 
+                    label: Text("حفظ الأسعار", style: GoogleFonts.cairo(fontWeight: FontWeight.w700))
+                  )
                 ],
               ),
             ),
@@ -125,10 +134,15 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
               Expanded(child: TextField(controller: _tableController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "رقم طاولة الألعاب", border: OutlineInputBorder()))),
               const SizedBox(width: 10),
               SizedBox(height: 55, child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(backgroundColor: successGreen, foregroundColor: Colors.white), 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: successGreen, 
+                  foregroundColor: Colors.white,
+                  animationDuration: const Duration(milliseconds: 300),
+                ), 
                 onPressed: _addTable, 
                 icon: const Icon(Icons.add), 
-                label: Text("إضافة", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)))),
+                label: Text("إضافة", style: GoogleFonts.cairo(fontWeight: FontWeight.w700))
+              )),
             ],
           ),
           const SizedBox(height: 15),
@@ -140,7 +154,7 @@ class _GamingSettingsScreenState extends State<GamingSettingsScreen> {
             itemBuilder: (context, index) {
               int tNum = _tables[index]['table_number'];
               return Card(
-                color: gamingPurple.withOpacity(0.1),
+                color: gamingPurple.withValues(alpha:0.1),
                 child: Stack(
                   children: [
                     Center(child: Text("طاولة ألعاب\n$tNum", textAlign: TextAlign.center, style: GoogleFonts.cairo(fontWeight: FontWeight.bold))),

@@ -52,7 +52,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: successGreen, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: successGreen, 
+              foregroundColor: Colors.white,
+              animationDuration: const Duration(milliseconds: 300),
+            ),
             onPressed: () async {
               String newCat = controller.text.trim();
               if (newCat.isNotEmpty) {
@@ -96,7 +100,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: editBlue, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: editBlue, 
+              foregroundColor: Colors.white,
+              animationDuration: const Duration(milliseconds: 300),
+            ),
             onPressed: () async {
               String newName = controller.text.trim();
               if (newName.isNotEmpty && newName != oldName) {
@@ -124,7 +132,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: deleteRed, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: deleteRed, 
+              foregroundColor: Colors.white,
+              animationDuration: const Duration(milliseconds: 300),
+            ),
             onPressed: () async {
               await DatabaseHelper.instance.deleteCategory(name);
               if (!context.mounted) return;
@@ -167,7 +179,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: gamingPurple.withOpacity(0.2),
+                      backgroundColor: gamingPurple.withValues(alpha: 0.2),
                       child: const Icon(Icons.category, color: gamingPurple),
                     ),
                     title: Text(cat, style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -200,6 +212,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         icon: const Icon(Icons.add),
         label: Text("تصنيف جديد", 
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        splashColor: Colors.white.withOpacity(0.3),
       ),
     );
   }

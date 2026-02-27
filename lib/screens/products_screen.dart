@@ -65,7 +65,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: accentGold, foregroundColor: Colors.black),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accentGold, 
+                      foregroundColor: Colors.black87,
+                      animationDuration: const Duration(milliseconds: 300),
+                    ),
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
                       if (result != null) {
@@ -92,7 +96,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: successGreen, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: successGreen, 
+                  foregroundColor: Colors.white,
+                  animationDuration: const Duration(milliseconds: 300),
+                ),
                 onPressed: () async {
                   if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                     await DatabaseHelper.instance.addProduct({
@@ -141,7 +149,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: editBlue, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: editBlue, 
+                      foregroundColor: Colors.white,
+                      animationDuration: const Duration(milliseconds: 300),
+                    ),
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
                       if (result != null) {
@@ -168,7 +180,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: editBlue, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: editBlue, 
+                  foregroundColor: Colors.white,
+                  animationDuration: const Duration(milliseconds: 300),
+                ),
                 onPressed: () async {
                   if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                     await DatabaseHelper.instance.updateProduct(
@@ -221,9 +237,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     // 👇 عرض الصورة باللستة الدائرية 👇
                     leading: CircleAvatar(
                       radius: 25,
-                      backgroundColor: accentGold.withOpacity(0.3),
+                      backgroundColor: accentGold.withValues(alpha: 0.3),
                       backgroundImage: hasImage ? FileImage(File(imgPath)) : null,
-                      child: hasImage ? null : const Icon(Icons.fastfood, color: accentGold),
+                      child: hasImage ? null : const Icon(Icons.fastfood, color: Colors.orange),
                     ),
                     title: Text(product['name'], 
                       style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
@@ -242,10 +258,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: accentGold,
-        foregroundColor: Colors.black,
+        foregroundColor: Colors.black87,
         onPressed: _showAddProductDialog,
         icon: const Icon(Icons.add),
         label: Text("منتج جديد", style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        splashColor: Colors.black.withOpacity(0.2),
       ),
     );
   }

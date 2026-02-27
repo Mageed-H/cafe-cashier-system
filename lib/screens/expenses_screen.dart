@@ -50,7 +50,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: busyRed, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: busyRed, 
+              foregroundColor: Colors.white,
+              animationDuration: const Duration(milliseconds: 300),
+            ),
             onPressed: () async {
               if (amountController.text.isNotEmpty && descController.text.isNotEmpty) {
                 await DatabaseHelper.instance.addExpense(double.parse(amountController.text), descController.text);
@@ -101,9 +105,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: busyRed,
+        foregroundColor: Colors.white,
         onPressed: _showAddExpenseDialog,
         icon: const Icon(Icons.remove_circle),
         label: Text("تسجيل مصروف", style: GoogleFonts.cairo(fontWeight: FontWeight.w700)),
+        splashColor: Colors.white.withOpacity(0.3),
       ),
     );
   }

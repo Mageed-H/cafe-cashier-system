@@ -90,13 +90,15 @@ class _TableSettingsScreenState extends State<TableSettingsScreen> {
                   height: 55,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: primaryBrown,
                       foregroundColor: Colors.white,
+                      animationDuration: const Duration(milliseconds: 300),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: _addTable,
                     icon: const Icon(Icons.add),
-                    label: const Text("إضافة", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    label: Text("إضافة", 
+                      style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

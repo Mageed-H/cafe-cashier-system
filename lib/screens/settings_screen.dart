@@ -124,6 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: successGreen,
                   foregroundColor: Colors.white,
+                  animationDuration: const Duration(milliseconds: 300),
                 ),
                 onPressed: _saveSettings,
                 icon: const Icon(Icons.save),
